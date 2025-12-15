@@ -1,19 +1,10 @@
 const express = require('express');
-const pool = require('./db');
+const pool = require('./db'); // ✅ Esta es la única conexión que necesitamos
 const cors = require('cors');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-// --- CONFIGURACIÓN DE BASE DE DATOS ---
-const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'urbanos_pereira_db',
-  password: 'Admin123', // <--- ¡REVISA TU CONTRASEÑA!
-  port: 5432,
-});
 
 // --- RUTA 1: REGISTRO INTELIGENTE (LOGIN O REGISTRO) ---
 app.post('/register', async (req, res) => {
@@ -34,8 +25,6 @@ app.post('/register', async (req, res) => {
     if (error.code === '23505') {
       try {
         const existingUser = await pool.query("SELECT * FROM users WHERE email = $1", [req.body.email]);
-        
-        // (Opcional: Aquí podrías verificar la contraseña si quisieras ser estricto)
         
         return res.json({ 
           message: '¡Bienvenido de nuevo! (Sesión Iniciada)', 
@@ -167,5 +156,5 @@ app.get('/buses', async (req, res) => {
 });
 
 // INICIAR
-const PORT = 3000;
-app.listen(PORT, () => { console.log(`🚀 Sistema Urbanos Completo: http://localhost:${PORT}`); });
+const PORT = process.env.PORT || 3000; // <--- Importante: Usar el puerto que nos dé la Nube
+app.listen(PORT, () => { console.log(`🚀 Sistema Urbanos Completo corriendo en puerto ${PORT}`); });
