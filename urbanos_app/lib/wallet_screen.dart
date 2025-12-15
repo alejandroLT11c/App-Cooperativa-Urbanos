@@ -28,7 +28,7 @@ class _WalletScreenState extends State<WalletScreen> {
   Future<void> _recargar() async {
     setState(() => _cargando = true);
     try {
-      final url = Uri.parse('http://192.168.0.112:3000/wallet/recharge');
+      final url = Uri.parse('https://urbanos-api.onrender.com/wallet/recharge');
       final response = await http.post(url,
         headers: {"Content-Type": "application/json"},
         // OJO: Aquí usamos widget.userId
@@ -51,7 +51,7 @@ class _WalletScreenState extends State<WalletScreen> {
   Future<void> _comprarTiquete() async {
     setState(() => _cargando = true);
     try {
-      final url = Uri.parse('http://192.168.0.112:3000/tickets/buy');
+      final url = Uri.parse('https://urbanos-api.onrender.com/tickets/buy');
       final response = await http.post(url,
         headers: {"Content-Type": "application/json"},
         // OJO: Aquí usamos widget.userId
@@ -84,7 +84,7 @@ class _WalletScreenState extends State<WalletScreen> {
         child: Column(
           children: [
             // Muestra el ID pequeño para que sepas que funcionó
-            Text("Usuario: ${widget.userId.substring(0,8)}...", style: TextStyle(color: Colors.grey)),
+            Text("Usuario: ${widget.userId}", style: TextStyle(color: Colors.grey)),
             const SizedBox(height: 10),
             
             Container(

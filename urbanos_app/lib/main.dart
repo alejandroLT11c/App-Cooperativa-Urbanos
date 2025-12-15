@@ -49,9 +49,8 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    // Aquí nos conectamos con tu Servidor Node.js
-    // NOTA: Usamos 'localhost' porque estás en Chrome. Si usas emulador Android sería '10.0.2.2'
-    final url = Uri.parse('http://192.168.0.112:3000/register');
+    // URL de tu servidor en Render
+    final url = Uri.parse('https://urbanos-api.onrender.com/register');
     
     try {
       final response = await http.post(
@@ -60,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
         body: jsonEncode({
           "email": email,
           "password": password,
-          "full_name": "Usuario Nuevo", // Por ahora registramos al intentar entrar
+          "full_name": "Usuario Nuevo", 
           "role": "CLIENTE"
         }),
       );
@@ -68,8 +67,10 @@ class _LoginPageState extends State<LoginPage> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         
-        // EXTRAEMOS EL ID QUE NOS DIO EL SERVIDOR
-        String nuevoId = data['user']['id'];
+        // --- AQUÍ ESTABA EL ERROR, YA LO ARREGLÉ ---
+        // Le agregamos .toString() para convertir el número 1 en texto "1"
+        String nuevoId = data['user']['id'].toString(); 
+        // -------------------------------------------
 
         Navigator.pushReplacement(
           context,

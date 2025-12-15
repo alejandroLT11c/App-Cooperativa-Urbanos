@@ -33,7 +33,7 @@ class _MapScreenState extends State<MapScreen> {
   StreamSubscription<Position>? _gpsStream;
   
   // Si estoy en modo conductor, uso mi propio ID de usuario como ID del bus
-  String get _myBusId => widget.userId.substring(0, 3); // Usamos los primeros 3 caracteres del ID como "Placa"
+  String get _myBusId => widget.userId; // Usamos los primeros 3 caracteres del ID como "Placa"
 
   @override
   void initState() {
@@ -75,7 +75,7 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _sendMyLocation(Position position) async {
     try {
-      final url = Uri.parse('http://192.168.0.112:3000/buses/$_myBusId/location');
+      final url = Uri.parse('https://urbanos-api.onrender.com/buses/$_myBusId/location');
       await http.put(url, 
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
@@ -90,7 +90,7 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _fetchBuses() async {
     try {
-      final response = await http.get(Uri.parse('http://192.168.0.112:3000/buses'));
+      final response = await http.get(Uri.parse('https://urbanos-api.onrender.com/buses'));
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         for (var busData in data) {

@@ -52,16 +52,31 @@ app.post('/buses', async (req, res) => {
   } catch (error) { console.error(error); res.status(500).json({ error: 'Error al crear bus' }); }
 });
 
-// --- RUTA 3: MOVER BUS (GPS) ---
+// --- RUTA 3: MOVER BUS (GPS) - VERSIÓN MEJORADA (AUTO-CREACIÓN) ---
 app.put('/buses/:id/location', async (req, res) => {
   try {
     const { id } = req.params;
     const { lat, lng } = req.body;
+
+    // 1. Intentamos ACTUALIZAR la ubicación del bus
     const updatedBus = await pool.query(
       "UPDATE buses SET last_latitude = $1, last_longitude = $2, last_updated = NOW() WHERE id = $3 RETURNING *",
       [lat, lng, id]
     );
-    res.json({ message: '📍 Ubicación actualizada', bus: updatedBus.rows[0] });
+
+    // 2. Si el bus YA EXISTÍA, respondemos normal
+    if (updatedBus.rows.length > 0) {
+      return res.json({ message: '📍 Ubicación actualizada', bus: updatedBus.rows[0] });
+    }
+
+    // 3. Si NO EXISTÍA (fue borrado o es nuevo), lo CREAMOS automáticamente
+    const newBus = await pool.query(
+      "INSERT INTO buses (id, status, last_latitude, last_longitude, last_updated) VALUES ($1, 'ACTIVO', $2, $3, NOW()) RETURNING *",
+      [id, lat, lng]
+    );
+
+    res.json({ message: '🆕 ¡Bus nuevo creado y ubicado!', bus: newBus.rows[0] });
+
   } catch (error) { console.error(error); res.status(500).json({ error: 'Error GPS' }); }
 });
 
